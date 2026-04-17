@@ -1,0 +1,36 @@
+
+
+/*Estes campos para todos os documentos, quando eu quiser, adiciono o placeholder*/
+<<OBSERVACOES>>
+<<NOME>>
+<<CPF>>
+<<MATRICULA>>
+<<FONE1>>
+<<FONE2>>
+<<CURSO>>
+<<TURMA>>
+<<CIDADE_DATA>>
+<<CODIGO>>
+<<URL_VALIDACAO>>
+
+/*Estes eu uso em alguns documentos, precisamos ver o que já tem no schema.prisma*/
+<<PAI>>
+<<MAE>>
+<<MOTIVO>>
+<<HORARIO>>
+<<HORARIOENTRADA>>
+<<HORARIOSAIDA>>
+
+/*Estes vou usar de vez em quando apenas, quando eu quiser eu adiciono o placeholder*/
+<<TITULO>>
+<<TIPO_DOCUMENTO>>
+<<ASSUNTO>>
+<<DESTINATARIO>>
+<<CARGO_DESTINATARIO>>
+<<ORGAO_DESTINATARIO>>
+<<DATA_ATUAL>>
+<<DATA_EXTENSO>>
+
+/*Este deixei só para verificação ou lembrança depois*/
+Este documento pode ser validado eletronicamente pelo código <<CODIGO>>
+ou pelo endereço: <<URL_VALIDACAO>>

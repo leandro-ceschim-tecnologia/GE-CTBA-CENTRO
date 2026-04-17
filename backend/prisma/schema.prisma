@@ -1,0 +1,934 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  admin
+  pedagogico
+  coordenacao
+  coordsetor
+  instrutor
+  aluno
+  comercial
+  secretaria
+}
+
+enum DiaSemana {
+  SEGUNDA
+  TERCA
+  QUARTA
+  QUINTA
+  SEXTA
+  SABADO
+}
+
+enum PeriodoEnsalamento {
+  MANHA
+  TARDE
+  NOITE
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  nome      String
+  email     String   @unique
+  cpf       String?
+  senha     String
+  matricula String?  @unique
+  fone1     String?
+  fone2     String?
+  role      UserRole
+  ativo     Boolean  @default(true)
+  turmaId   Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  fotoUrl String?
+  bio     String?
+
+  turma                               Turma?                    @relation("AlunosDaTurma", fields: [turmaId], references: [id])
+  ofertasCriadas                      OfertaAcademica[]         @relation("OfertaCreatedBy")
+  inscricoesOferta                    OfertaInscricao[]
+  documentosEmitidos                  DocumentoEmitido[]        @relation("UsuarioDocumentosEmitidos")
+  estagioGrupos                       EstagioBlocoGrupoAluno[]
+  camposSupervisionados               CampoEstagio[]            @relation("SupervisorCampoEstagio")
+  cronogramaAulasInstrutor            CronogramaAula[]          @relation("InstrutorCronogramaAulas")
+  turmaDisciplinasComoInstrutorPadrao TurmaDisciplina[]         @relation("InstrutorPadraoTurmaDisciplinas")
+  reservasInstrutor                   Reserva[]                 @relation("InstrutorReservas")
+  informativosCriados                 Informativo[]             @relation("InformativoCreatedBy")
+  informativosDestinatario            InformativoDestinatario[]
+  tarefasPedagogicasResponsavel       TarefaPedagogica[]        @relation("TarefasPedagogicasResponsavel")
+  tarefasPedagogicasCriadas           TarefaPedagogica[]        @relation("TarefasPedagogicasCriadoPor")
+  estagioAlunos                       EstagioAluno[]
+
+  alunoTurmaDisciplinas AlunoTurmaDisciplina[] @relation("AlunoTurmaDisciplinaAluno")
+
+  ofertasComoInstrutor OfertaAcademica[] @relation("InstrutorOfertaAcademica")
+
+  frequenciasLancadas FrequenciaLancamento[] @relation("FrequenciaLancamentoLancadoPor")
+  frequenciasFechadas FrequenciaLancamento[] @relation("FrequenciaLancamentoFechadoPor")
+
+  frequenciasAluno            FrequenciaAluno[] @relation("FrequenciaAlunoUser")
+  frequenciasAlunoAtualizadas FrequenciaAluno[] @relation("FrequenciaAlunoUpdatedBy")
+
+  evasaoOcorrenciasAluno       EvasaoOcorrencia[] @relation("EvasaoOcorrenciaAluno")
+  evasaoOcorrenciasCriadas     EvasaoOcorrencia[] @relation("EvasaoOcorrenciaCriadoPor")
+  evasaoOcorrenciasAtualizadas EvasaoOcorrencia[] @relation("EvasaoOcorrenciaAtualizadoPor")
+
+  evasaoTratativasResponsavel EvasaoTratativa[] @relation("EvasaoTratativaResponsavel")
+}
+
+model Curso {
+  id        Int      @id @default(autoincrement())
+  nome      String
+  ativo     Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  turmas      Turma[]
+  disciplinas Disciplina[]
+  recessos    Recesso[]
+
+  informativos  InformativoCurso[]
+  estagiosBloco EstagioBloco[]
+
+  evasaoOcorrencias EvasaoOcorrencia[] @relation("EvasaoOcorrenciaCurso")
+}
+
+model Sala {
+  id         Int      @id @default(autoincrement())
+  nome       String
+  capacidade Int?
+  bloco      String?
+  ordem      Int      @default(0)
+  ativo      Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+
+  ensalamentos  EnsalamentoItem[]
+  ofertasEspaco OfertaEspaco[]
+}
+
+model Turma {
+  id                  Int       @id @default(autoincrement())
+  nome                String
+  turno               String
+  cursoId             Int
+  ativo               Boolean   @default(true)
+  dataInicio          DateTime?
+  diasAula            Json?
+  datasPuladas        Json?
+  tipoHorario         String?
+  horarioSemanaInicio String?
+  horarioSemanaFim    String?
+  horarioSabadoInicio String?
+  horarioSabadoFim    String?
+  sabadoIntegral      Boolean   @default(false)
+  createdAt           DateTime  @default(now())
+
+  curso           Curso              @relation(fields: [cursoId], references: [id])
+  disciplinas     TurmaDisciplina[]
+  cronogramaAulas CronogramaAula[]
+  reservas        Reserva[]
+  alunos          User[]             @relation("AlunosDaTurma")
+  informativos    InformativoTurma[]
+
+  estagiosBloco EstagioBloco[]
+
+  alunosTurmaDisciplinas AlunoTurmaDisciplina[] @relation("AlunoTurmaDisciplinaTurma")
+  evasaoOcorrencias      EvasaoOcorrencia[]     @relation("EvasaoOcorrenciaTurma")
+  ensalamentos           EnsalamentoItem[]
+}
+
+model EnsalamentoItem {
+  id          Int                @id @default(autoincrement())
+  salaId      Int
+  turmaId     Int?
+  diaSemana   DiaSemana
+  periodo     PeriodoEnsalamento
+  textoLivre  String?
+  observacoes String?
+  ativo       Boolean            @default(true)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @default(now()) @updatedAt
+
+  sala  Sala   @relation(fields: [salaId], references: [id], onDelete: Cascade)
+  turma Turma? @relation(fields: [turmaId], references: [id])
+
+  @@unique([salaId, diaSemana, periodo])
+  @@index([turmaId])
+  @@index([diaSemana, periodo])
+}
+
+model Disciplina {
+  id                  Int      @id @default(autoincrement())
+  nome                String
+  cursoId             Int
+  quantidadeEncontros Int
+  modulo              Int      @default(1)
+  ordem               Int      @default(1)
+  ativo               Boolean  @default(true)
+  createdAt           DateTime @default(now())
+
+  curso  Curso             @relation(fields: [cursoId], references: [id])
+  turmas TurmaDisciplina[]
+}
+
+model TurmaDisciplina {
+  id                  Int      @id @default(autoincrement())
+  turmaId             Int
+  disciplinaId        Int
+  ordem               Int
+  modulo              Int
+  quantidadeEncontros Int
+  instrutorPadraoId   Int?
+  ativo               Boolean  @default(true)
+  createdAt           DateTime @default(now())
+
+  turma           Turma            @relation(fields: [turmaId], references: [id])
+  disciplina      Disciplina       @relation(fields: [disciplinaId], references: [id])
+  instrutorPadrao User?            @relation("InstrutorPadraoTurmaDisciplinas", fields: [instrutorPadraoId], references: [id])
+  cronogramaAulas CronogramaAula[]
+
+  alunosVinculados  AlunoTurmaDisciplina[] @relation("AlunoTurmaDisciplinaTurmaDisciplina")
+  evasaoOcorrencias EvasaoOcorrencia[]     @relation("EvasaoOcorrenciaTurmaDisciplina")
+
+  @@unique([turmaId, disciplinaId])
+}
+
+model Recesso {
+  id                Int      @id @default(autoincrement())
+  titulo            String
+  dataInicio        DateTime
+  dataFim           DateTime
+  tipo              String
+  aplicaTodosCursos Boolean  @default(true)
+  cursoId           Int?
+  ativo             Boolean  @default(true)
+  createdAt         DateTime @default(now())
+
+  curso Curso? @relation(fields: [cursoId], references: [id])
+}
+
+model CronogramaAula {
+  id                       Int      @id @default(autoincrement())
+  turmaId                  Int
+  turmaDisciplinaId        Int
+  data                     DateTime
+  numeroEncontroGeral      Int
+  numeroEncontroDisciplina Int
+  tipoAula                 String   @default("Aula")
+  observacoes              String?
+  status                   String   @default("planejada")
+  instrutorId              Int?
+  ativo                    Boolean  @default(true)
+
+  horarioInicio String?
+  horarioFim    String?
+
+  createdAt DateTime @default(now())
+
+  turma           Turma           @relation(fields: [turmaId], references: [id])
+  turmaDisciplina TurmaDisciplina @relation(fields: [turmaDisciplinaId], references: [id])
+  instrutor       User?           @relation("InstrutorCronogramaAulas", fields: [instrutorId], references: [id])
+  reservas        Reserva[]
+
+  frequenciaLancamento FrequenciaLancamento?
+  frequenciasAluno     FrequenciaAluno[]
+}
+
+model Reserva {
+  id               Int      @id @default(autoincrement())
+  cronogramaAulaId Int
+  turmaId          Int
+  instrutorId      Int?
+  tipo             String
+  recursoNome      String
+  data             DateTime
+  turno            String
+  horarioInicio    String
+  horarioFim       String
+  status           String   @default("ativa")
+  observacoes      String?
+  origem           String?  @default("cronograma")
+  createdAt        DateTime @default(now())
+
+  cronogramaAula CronogramaAula @relation(fields: [cronogramaAulaId], references: [id])
+  turma          Turma          @relation(fields: [turmaId], references: [id])
+  instrutor      User?          @relation("InstrutorReservas", fields: [instrutorId], references: [id])
+}
+
+enum OfertaTipo {
+  CURSO_INTENSIVO
+  PALESTRA
+  WORKSHOP
+  TREINAMENTO
+  MINICURSO
+  EVENTO
+  SEGUNDA_CHAMADA_RECUPERACAO
+  OUTRO
+}
+
+enum OfertaStatus {
+  RASCUNHO
+  PUBLICADO
+  ENCERRADO
+  CANCELADO
+}
+
+enum OfertaPublicoRole {
+  ALUNO
+  INSTRUTOR
+  COMERCIAL
+  SECRETARIA
+  COORDENACAO
+  COORDSETOR
+  PEDAGOGICO
+  ADMIN
+}
+
+enum OfertaInscricaoStatus {
+  INSCRITO
+  CANCELADO
+  PRESENTE
+  AUSENTE
+  LISTA_ESPERA
+}
+
+enum AlunoTurmaDisciplinaOrigem {
+  BASE
+  PENDENCIA
+  REPOSICAO
+  EXTRA
+}
+
+enum FrequenciaLancamentoStatus {
+  ABERTO
+  FECHADO
+}
+
+enum FrequenciaAlunoStatus {
+  NAO_LANCADO
+  PRESENTE
+  FALTA
+  FALTA_JUSTIFICADA
+}
+
+enum EvasaoRegraTipo {
+  FALTA_INDIVIDUAL
+  DUAS_FALTAS_CONSECUTIVAS
+  EVASAO_12_FALTAS
+}
+
+enum EvasaoOcorrenciaStatus {
+  PENDENTE_CONTATO
+  EM_TRATATIVA
+  TRATADO
+  LANCADO_SISTEMA
+  FINALIZADO
+  CANCELADO
+}
+
+enum EvasaoTipoContato {
+  LIGACAO
+  WHATSAPP
+  PRESENCIAL
+  OUTRO
+}
+
+model OfertaAcademica {
+  id          Int        @id @default(autoincrement())
+  titulo      String
+  tipo        OfertaTipo
+  descricao   String?
+  observacoes String?
+  local       String?
+
+  dataEvento DateTime
+  horaInicio String?
+  horaFim    String?
+
+  inicioInscricoes DateTime?
+  fimInscricoes    DateTime?
+
+  cargaHoraria            Int?
+  temaCertificado         String?
+  templateCertificadoPath String?
+  certificadoAtivo        Boolean @default(true)
+
+  vagas              Int?
+  permiteInscricao   Boolean @default(true)
+  possuiCertificacao Boolean @default(false)
+
+  status OfertaStatus @default(RASCUNHO)
+  ativo  Boolean      @default(true)
+
+  createdById Int?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  createdBy    User?               @relation("OfertaCreatedBy", fields: [createdById], references: [id])
+  publicosAlvo OfertaPublicoAlvo[]
+  inscricoes   OfertaInscricao[]
+  espacos      OfertaEspaco[]
+
+  instrutorId Int?
+  instrutor   User? @relation("InstrutorOfertaAcademica", fields: [instrutorId], references: [id])
+
+  @@index([status])
+  @@index([tipo])
+  @@index([dataEvento])
+  @@index([ativo])
+}
+
+model OfertaEspaco {
+  id          Int      @id @default(autoincrement())
+  ofertaId    Int
+  salaId      Int?
+  textoLivre  String?
+  observacoes String?
+  ordem       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+
+  oferta OfertaAcademica @relation(fields: [ofertaId], references: [id], onDelete: Cascade)
+  sala   Sala?           @relation(fields: [salaId], references: [id])
+
+  @@index([ofertaId])
+  @@index([salaId])
+}
+
+model OfertaPublicoAlvo {
+  id       Int               @id @default(autoincrement())
+  ofertaId Int
+  role     OfertaPublicoRole
+
+  oferta OfertaAcademica @relation(fields: [ofertaId], references: [id], onDelete: Cascade)
+
+  @@unique([ofertaId, role])
+  @@index([role])
+}
+
+model OfertaInscricao {
+  id       Int @id @default(autoincrement())
+  ofertaId Int
+  userId   Int
+
+  status      OfertaInscricaoStatus @default(INSCRITO)
+  presenca    Boolean?
+  observacoes String?
+
+  dataInscricao DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  oferta OfertaAcademica @relation(fields: [ofertaId], references: [id], onDelete: Cascade)
+  user   User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  certificadoEmitido   Boolean   @default(false)
+  certificadoEmitidoEm DateTime?
+  certificadoUrl       String?
+  codigoCertificado    String?   @unique
+  certificadoRevogado  Boolean   @default(false)
+  certificadoVersao    Int       @default(1)
+
+  @@unique([ofertaId, userId])
+  @@index([status])
+  @@index([userId])
+  @@index([ofertaId])
+}
+
+enum InformativoPrioridade {
+  ALTA
+  MEDIA
+  BAIXA
+}
+
+enum InformativoStatus {
+  RASCUNHO
+  PUBLICADO
+  INATIVO
+  EXPIRADO
+}
+
+enum InformativoPublicoRole {
+  ALUNO
+  INSTRUTOR
+  COORDENACAO
+  COORDSETOR
+  PEDAGOGICO
+  ADMIN
+  COMERCIAL
+  SECRETARIA
+}
+
+model Informativo {
+  id         Int                   @id @default(autoincrement())
+  titulo     String
+  descricao  String
+  prioridade InformativoPrioridade @default(MEDIA)
+  status     InformativoStatus     @default(RASCUNHO)
+
+  dataPublicacao DateTime?
+  dataExpiracao  DateTime?
+
+  createdById Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  createdBy User @relation("InformativoCreatedBy", fields: [createdById], references: [id])
+
+  publicos      InformativoPublico[]
+  cursos        InformativoCurso[]
+  turmas        InformativoTurma[]
+  destinatarios InformativoDestinatario[]
+
+  @@index([status])
+  @@index([prioridade])
+  @@index([dataPublicacao])
+  @@index([dataExpiracao])
+  @@index([createdById])
+}
+
+model InformativoPublico {
+  id            Int                    @id @default(autoincrement())
+  informativoId Int
+  role          InformativoPublicoRole
+
+  informativo Informativo @relation(fields: [informativoId], references: [id], onDelete: Cascade)
+
+  @@unique([informativoId, role])
+  @@index([role])
+}
+
+model InformativoCurso {
+  id            Int @id @default(autoincrement())
+  informativoId Int
+  cursoId       Int
+
+  informativo Informativo @relation(fields: [informativoId], references: [id], onDelete: Cascade)
+  curso       Curso       @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+
+  @@unique([informativoId, cursoId])
+  @@index([cursoId])
+}
+
+model InformativoTurma {
+  id            Int @id @default(autoincrement())
+  informativoId Int
+  turmaId       Int
+
+  informativo Informativo @relation(fields: [informativoId], references: [id], onDelete: Cascade)
+  turma       Turma       @relation(fields: [turmaId], references: [id], onDelete: Cascade)
+
+  @@unique([informativoId, turmaId])
+  @@index([turmaId])
+}
+
+model InformativoDestinatario {
+  id            Int @id @default(autoincrement())
+  informativoId Int
+  userId        Int
+
+  informativo Informativo @relation(fields: [informativoId], references: [id], onDelete: Cascade)
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([informativoId, userId])
+  @@index([userId])
+}
+
+enum TarefaPedagogicaTipo {
+  LEVANTAMENTO_CH_ESTAGIO
+  CONTATO_INSTRUTOR
+  AJUSTE_CRONOGRAMA
+  DOCUMENTACAO_ESTAGIO
+  LANCAMENTO_SISTEMA
+  CONFERENCIA_DIARIOS
+  RESPONDER_WHATS_AD
+  CONTATO_ALUNO
+  EMISSAO_DOCUMENTO
+  LIGACOES_PARA_LFR
+  LIGACOES_PARA_LFI
+  LIGACOES_PARA_NC_LAC
+  LIGACOES_FALTOSOS
+  REQUERIMENTOS_SECRETARIA
+  SEPARAR_MATERIAL
+  OUTRO
+}
+
+enum TarefaPedagogicaTurno {
+  MANHA
+  TARDE
+  NOITE
+  INTEGRAL
+  SABADO
+}
+
+enum TarefaPedagogicaStatus {
+  PENDENTE
+  EM_EXECUCAO
+  CONCLUIDA
+  CANCELADA
+}
+
+model TarefaPedagogica {
+  id        Int                    @id @default(autoincrement())
+  titulo    String
+  descricao String?
+  tipo      TarefaPedagogicaTipo
+  prazo     DateTime
+  turno     TarefaPedagogicaTurno
+  status    TarefaPedagogicaStatus @default(PENDENTE)
+
+  responsavelId Int
+  criadoPorId   Int
+
+  dataCriacao   DateTime  @default(now())
+  dataConclusao DateTime?
+  observacoes   String?
+
+  responsavel User @relation("TarefasPedagogicasResponsavel", fields: [responsavelId], references: [id])
+  criadoPor   User @relation("TarefasPedagogicasCriadoPor", fields: [criadoPorId], references: [id])
+
+  @@index([responsavelId])
+  @@index([criadoPorId])
+  @@index([status])
+  @@index([tipo])
+  @@index([prazo])
+}
+
+model CampoEstagio {
+  id            Int      @id @default(autoincrement())
+  nome          String
+  tipo          String?
+  endereco      String?
+  cidade        String?
+  convenioAtivo Boolean  @default(true)
+  observacoes   String?
+  ativo         Boolean  @default(true)
+  createdAt     DateTime @default(now())
+
+  supervisorId Int?
+  supervisor   User? @relation("SupervisorCampoEstagio", fields: [supervisorId], references: [id])
+
+  blocosCampos EstagioBlocoCampo[]
+  rotacoes     EstagioRotacao[]
+}
+
+model EstagioBloco {
+  id      Int @id @default(autoincrement())
+  cursoId Int
+  turmaId Int
+
+  numeroBloco Int
+  turno       String
+
+  dataInicio DateTime
+  dataFim    DateTime
+
+  cargaHorariaPrevista Int
+
+  status      String  @default("Planejado")
+  observacoes String?
+
+  createdAt DateTime @default(now())
+
+  curso Curso @relation(fields: [cursoId], references: [id])
+  turma Turma @relation(fields: [turmaId], references: [id])
+
+  campos        EstagioBlocoCampo[]
+  grupos        EstagioBlocoGrupo[]
+  rotacoes      EstagioRotacao[]
+  estagioAlunos EstagioAluno[]
+
+  @@unique([turmaId, numeroBloco])
+}
+
+model EstagioAluno {
+  id      Int @id @default(autoincrement())
+  blocoId Int
+  alunoId Int
+
+  status       String   @default("Alocado")
+  dataAlocacao DateTime @default(now())
+
+  cargaHorariaCumprida Int @default(0)
+  faltas               Int @default(0)
+
+  observacoes String?
+
+  bloco EstagioBloco @relation(fields: [blocoId], references: [id])
+  aluno User         @relation(fields: [alunoId], references: [id])
+
+  @@unique([blocoId, alunoId])
+}
+
+model EstagioBlocoCampo {
+  id      Int @id @default(autoincrement())
+  blocoId Int
+  campoId Int
+
+  ordem       Int?
+  observacoes String?
+
+  createdAt DateTime @default(now())
+
+  bloco EstagioBloco @relation(fields: [blocoId], references: [id], onDelete: Cascade)
+  campo CampoEstagio @relation(fields: [campoId], references: [id])
+
+  @@unique([blocoId, campoId])
+}
+
+model EstagioBlocoGrupo {
+  id      Int @id @default(autoincrement())
+  blocoId Int
+
+  nome        String
+  ordem       Int?
+  fixo        Boolean @default(false)
+  observacoes String?
+
+  createdAt DateTime @default(now())
+
+  bloco    EstagioBloco             @relation(fields: [blocoId], references: [id], onDelete: Cascade)
+  alunos   EstagioBlocoGrupoAluno[]
+  rotacoes EstagioRotacao[]
+
+  @@unique([blocoId, nome])
+}
+
+model EstagioBlocoGrupoAluno {
+  id      Int @id @default(autoincrement())
+  grupoId Int
+  alunoId Int
+
+  createdAt DateTime @default(now())
+
+  grupo EstagioBlocoGrupo @relation(fields: [grupoId], references: [id], onDelete: Cascade)
+  aluno User              @relation(fields: [alunoId], references: [id])
+
+  @@unique([grupoId, alunoId])
+}
+
+model EstagioRotacao {
+  id Int @id @default(autoincrement())
+
+  blocoId Int
+  grupoId Int
+  campoId Int
+
+  dataInicio DateTime
+  dataFim    DateTime
+
+  ordem Int
+  fixo  Boolean @default(false)
+
+  createdAt DateTime @default(now())
+
+  bloco EstagioBloco      @relation(fields: [blocoId], references: [id], onDelete: Cascade)
+  grupo EstagioBlocoGrupo @relation(fields: [grupoId], references: [id], onDelete: Cascade)
+  campo CampoEstagio      @relation(fields: [campoId], references: [id])
+
+  @@index([blocoId, ordem])
+}
+
+enum TipoDocumento {
+  DECLARACAO
+  OFICIO
+  REQUERIMENTO
+}
+
+model DocumentoEmitido {
+  id              Int           @id @default(autoincrement())
+  codigoDocumento String        @unique
+  tipo            TipoDocumento
+  titulo          String
+  templatePath    String
+  docxUrl         String?
+  pdfUrl          String?
+  emitidoEm       DateTime?
+  cancelado       Boolean       @default(false)
+  observacoes     String?
+  assunto         String?
+
+  userId Int?
+  user   User? @relation("UsuarioDocumentosEmitidos", fields: [userId], references: [id])
+
+  nomeSolicitante      String?
+  cpfSolicitante       String?
+  matriculaSolicitante String?
+  fone1Solicitante     String?
+  fone2Solicitante     String?
+  cursoSolicitante     String?
+  turmaSolicitante     String?
+
+  destinatarioNome  String?
+  destinatarioCargo String?
+  destinatarioOrgao String?
+
+  variaveisTemplate Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([codigoDocumento])
+  @@index([tipo])
+  @@index([cancelado])
+  @@index([emitidoEm])
+  @@index([userId])
+}
+
+model AlunoTurmaDisciplina {
+  id                Int                         @id @default(autoincrement())
+  alunoId           Int
+  turmaId           Int
+  turmaDisciplinaId Int
+  origem            AlunoTurmaDisciplinaOrigem @default(BASE)
+  ativo             Boolean                     @default(true)
+  observacoes       String?
+  createdAt         DateTime                    @default(now())
+  updatedAt         DateTime                    @default(now()) @updatedAt
+
+  aluno           User            @relation("AlunoTurmaDisciplinaAluno", fields: [alunoId], references: [id])
+  turma           Turma           @relation("AlunoTurmaDisciplinaTurma", fields: [turmaId], references: [id])
+  turmaDisciplina TurmaDisciplina @relation("AlunoTurmaDisciplinaTurmaDisciplina", fields: [turmaDisciplinaId], references: [id])
+
+  frequenciasAluno FrequenciaAluno[]
+
+  @@unique([alunoId, turmaDisciplinaId])
+  @@index([alunoId])
+  @@index([turmaId])
+  @@index([turmaDisciplinaId])
+  @@index([origem])
+  @@index([ativo])
+}
+
+model FrequenciaLancamento {
+  id               Int                        @id @default(autoincrement())
+  cronogramaAulaId Int                        @unique
+  status           FrequenciaLancamentoStatus @default(ABERTO)
+
+  lancadoPorId Int?
+  fechadoPorId Int?
+
+  lancadoEm DateTime  @default(now())
+  fechadoEm DateTime?
+
+  observacoes String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+
+  cronogramaAula CronogramaAula @relation(fields: [cronogramaAulaId], references: [id])
+  lancadoPor     User?          @relation("FrequenciaLancamentoLancadoPor", fields: [lancadoPorId], references: [id])
+  fechadoPor     User?          @relation("FrequenciaLancamentoFechadoPor", fields: [fechadoPorId], references: [id])
+
+  alunos FrequenciaAluno[]
+
+  @@index([status])
+  @@index([lancadoPorId])
+  @@index([fechadoPorId])
+  @@index([lancadoEm])
+}
+
+model FrequenciaAluno {
+  id                     Int  @id @default(autoincrement())
+  frequenciaLancamentoId Int
+  cronogramaAulaId       Int
+  alunoId                Int
+  alunoTurmaDisciplinaId Int?
+
+  status        FrequenciaAlunoStatus @default(NAO_LANCADO)
+  justificativa String?
+  observacoes   String?
+
+  updatedById Int?
+  updatedAt   DateTime @default(now()) @updatedAt
+  createdAt   DateTime @default(now())
+
+  frequenciaLancamento FrequenciaLancamento  @relation(fields: [frequenciaLancamentoId], references: [id], onDelete: Cascade)
+  cronogramaAula       CronogramaAula        @relation(fields: [cronogramaAulaId], references: [id])
+  aluno                User                  @relation("FrequenciaAlunoUser", fields: [alunoId], references: [id])
+  alunoTurmaDisciplina AlunoTurmaDisciplina? @relation(fields: [alunoTurmaDisciplinaId], references: [id])
+  updatedBy            User?                 @relation("FrequenciaAlunoUpdatedBy", fields: [updatedById], references: [id])
+
+  evasaoOcorrencias EvasaoOcorrencia[]
+
+  @@unique([frequenciaLancamentoId, alunoId])
+  @@index([cronogramaAulaId])
+  @@index([alunoId])
+  @@index([alunoTurmaDisciplinaId])
+  @@index([status])
+  @@index([updatedById])
+}
+
+model EvasaoOcorrencia {
+  id                Int  @id @default(autoincrement())
+  alunoId           Int
+  cursoId           Int?
+  turmaId           Int?
+  turmaDisciplinaId Int?
+  frequenciaAlunoId Int?
+
+  regraTipo      EvasaoRegraTipo
+  qtdFaltas      Int                    @default(0)
+  dataReferencia DateTime
+  descricaoRegra String?
+  status         EvasaoOcorrenciaStatus @default(PENDENTE_CONTATO)
+  ativo          Boolean                @default(true)
+
+  criadoPorId     Int?
+  atualizadoPorId Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  aluno           User             @relation("EvasaoOcorrenciaAluno", fields: [alunoId], references: [id])
+  curso           Curso?           @relation("EvasaoOcorrenciaCurso", fields: [cursoId], references: [id])
+  turma           Turma?           @relation("EvasaoOcorrenciaTurma", fields: [turmaId], references: [id])
+  turmaDisciplina TurmaDisciplina? @relation("EvasaoOcorrenciaTurmaDisciplina", fields: [turmaDisciplinaId], references: [id])
+  frequenciaAluno FrequenciaAluno? @relation(fields: [frequenciaAlunoId], references: [id])
+  criadoPor       User?            @relation("EvasaoOcorrenciaCriadoPor", fields: [criadoPorId], references: [id])
+  atualizadoPor   User?            @relation("EvasaoOcorrenciaAtualizadoPor", fields: [atualizadoPorId], references: [id])
+
+  tratativas EvasaoTratativa[]
+
+  @@index([alunoId])
+  @@index([cursoId])
+  @@index([turmaId])
+  @@index([turmaDisciplinaId])
+  @@index([frequenciaAlunoId])
+  @@index([regraTipo])
+  @@index([status])
+  @@index([ativo])
+  @@index([dataReferencia])
+}
+
+model EvasaoTratativa {
+  id                 Int @id @default(autoincrement())
+  evasaoOcorrenciaId Int
+  responsavelId      Int
+
+  tipoContato  EvasaoTipoContato @default(LIGACAO)
+  descricao    String
+  retornoAluno String?
+  observacoes  String?
+
+  dataContato           DateTime @default(now())
+  lancadoSistemaInterno Boolean  @default(false)
+  dataLancamentoSistema DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  evasaoOcorrencia EvasaoOcorrencia @relation(fields: [evasaoOcorrenciaId], references: [id], onDelete: Cascade)
+  responsavel      User             @relation("EvasaoTratativaResponsavel", fields: [responsavelId], references: [id])
+
+  @@index([evasaoOcorrenciaId])
+  @@index([responsavelId])
+  @@index([tipoContato])
+  @@index([dataContato])
+  @@index([lancadoSistemaInterno])
+}
