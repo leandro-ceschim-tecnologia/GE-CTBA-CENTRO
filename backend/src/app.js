@@ -49,7 +49,10 @@ const allowedOrigins = (process.env.CORS_ORIGIN || "")
 
 app.use(cors({
     origin(origin, callback) {
-        if (!origin) {
+        if (!origin) return callback(null, true);
+
+        // Permite qualquer deploy da Vercel
+        if (origin.includes("vercel.app")) {
             return callback(null, true);
         }
 
@@ -57,7 +60,9 @@ app.use(cors({
             return callback(null, true);
         }
 
-        return callback(new Error(`Origem não permitida pelo CORS: ${origin}`));
+        console.log("❌ CORS bloqueado:", origin);
+
+        return callback(new Error("Not allowed by CORS"));
     },
     credentials: true,
 }));
