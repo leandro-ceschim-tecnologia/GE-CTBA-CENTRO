@@ -40,12 +40,27 @@ import ofertaDisponibilidadeRoutes from "./routes/oferta-disponibilidade.routes.
 
 const app = express();
 
-app.use(
-    cors({
-        origin: "http://localhost:5173",
-        credentials: true,
-    })
-);
+app.use(express.json());
+
+const allowedOrigins = (process.env.CORS_ORIGIN || "")
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+
+app.use(cors({
+    origin(origin, callback) {
+        if (!origin) {
+            return callback(null, true);
+        }
+
+        if (allowedOrigins.includes(origin)) {
+            return callback(null, true);
+        }
+
+        return callback(new Error(`Origem não permitida pelo CORS: ${origin}`));
+    },
+    credentials: true,
+}));
 
 app.use(helmet());
 app.use(morgan("dev"));
