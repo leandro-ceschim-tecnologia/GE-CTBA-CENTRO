@@ -120,7 +120,7 @@ export default function EstagioBlocoFormPage() {
 
             const response = await apiRequest("/estagios-enf/blocos", {
                 method: "POST",
-                body: JSON.stringify(payload),
+                body: payload,
             });
 
             setSuccess("Bloco criado com sucesso.");

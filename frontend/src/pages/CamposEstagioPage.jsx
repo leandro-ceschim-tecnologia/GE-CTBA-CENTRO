@@ -69,7 +69,7 @@ export default function CamposEstagioPage() {
 
             await apiRequest("/estagios-enf/campos", {
                 method: "POST",
-                body: JSON.stringify({
+                body: {
                     nome: form.nome.trim(),
                     tipo: form.tipo.trim() || null,
                     endereco: form.endereco.trim() || null,
@@ -78,7 +78,7 @@ export default function CamposEstagioPage() {
                     convenioAtivo: form.convenioAtivo,
                     observacoes: form.observacoes.trim() || null,
                     ativo: form.ativo,
-                }),
+                },
             });
 
             setSuccess("Campo de estágio cadastrado com sucesso.");

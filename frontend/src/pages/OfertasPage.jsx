@@ -96,7 +96,7 @@ export default function OfertasPage() {
 
             await apiRequest(`/ofertas/${ofertaId}/status`, {
                 method: "PATCH",
-                body: JSON.stringify({ status }),
+                body: { status },
             });
 
             setSuccess("Status da oferta atualizado com sucesso.");

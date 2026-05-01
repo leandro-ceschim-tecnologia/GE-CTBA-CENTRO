@@ -312,7 +312,7 @@ export default function DocumentosPage() {
 
             await apiRequest("/documentos", {
                 method: "POST",
-                body: JSON.stringify(payload),
+                body: payload,
             });
 
             setSuccess("Documento emitido com sucesso.");

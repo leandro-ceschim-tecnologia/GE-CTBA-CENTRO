@@ -430,7 +430,7 @@ export default function InformativosPage() {
 
             await apiRequest("/informativos", {
                 method: "POST",
-                body: JSON.stringify(payload),
+                body: payload,
             });
 
             setSuccess("Informativo cadastrado com sucesso.");
@@ -486,7 +486,7 @@ export default function InformativosPage() {
 
             await apiRequest(`/informativos/${id}/status`, {
                 method: "PATCH",
-                body: JSON.stringify({ status }),
+                body: { status },
             });
 
             setSuccess("Status do informativo atualizado com sucesso.");

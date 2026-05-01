@@ -62,9 +62,9 @@ export default function EstagioGrupoPage() {
 
             await apiRequest(`/estagios-enf/grupos/${grupoId}/alunos`, {
                 method: "POST",
-                body: JSON.stringify({
+                body: {
                     alunoId: Number(alunoId),
-                }),
+                },
             });
 
             setSuccess("Aluno adicionado ao grupo com sucesso.");
