@@ -77,14 +77,16 @@ app.get("/", (req, res) => {
 
 app.use(meRoutes);
 
-app.post("/auth/login", (req, res) => {
-    console.log("✅ BATEU NA ROTA DIRETA /auth/login");
-    return res.status(200).json({
-        ok: true,
-        source: "app.js direto",
-        body: req.body,
-    });
-});
+//app.post("/auth/login", (req, res) => {
+//    console.log("✅ BATEU NA ROTA DIRETA /auth/login");
+//    return res.status(200).json({
+//        ok: true,
+//        source: "app.js direto",
+//        body: req.body,
+//    });
+//});
+
+app.use("/auth", authRoutes);
 
 app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
