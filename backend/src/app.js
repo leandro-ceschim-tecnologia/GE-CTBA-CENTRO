@@ -40,7 +40,6 @@ import ofertaDisponibilidadeRoutes from "./routes/oferta-disponibilidade.routes.
 
 const app = express();
 
-app.use(express.json());
 
 //const allowedOrigins = (process.env.CORS_ORIGIN || "")
 //    .split(",")
@@ -50,7 +49,17 @@ app.use(express.json());
 app.use(cors({
     origin: true,
     credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
 }));
+
+app.options(/.*/, cors({
+    origin: true,
+    credentials: true,
+}));
+
+app.use(express.json());
+
 
 app.use(helmet());
 app.use(morgan("dev"));
