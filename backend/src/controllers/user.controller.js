@@ -48,7 +48,11 @@ const baseUserSchema = z.object({
     matricula: matriculaSchema,
     fone1: telefoneSchema,
     fone2: telefoneSchema,
-    turmaId: z.union([z.coerce.number().int().positive(), z.null()]).optional(),
+    turmaId: z
+        .preprocess((val) => {
+            if (val === "" || val === null || val === undefined) return undefined;
+            return Number(val);
+        }, z.number().int().positive().optional()),
 });
 
 const createUserSchema = baseUserSchema.extend({
