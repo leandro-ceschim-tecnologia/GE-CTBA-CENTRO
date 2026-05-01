@@ -42,10 +42,10 @@ const app = express();
 
 app.use(express.json());
 
-const allowedOrigins = (process.env.CORS_ORIGIN || "")
-    .split(",")
-    .map((item) => item.trim())
-    .filter(Boolean);
+//const allowedOrigins = (process.env.CORS_ORIGIN || "")
+//    .split(",")
+//    .map((item) => item.trim())
+//    .filter(Boolean);
 
 app.use(cors({
     origin: true,
@@ -73,7 +73,6 @@ app.use(meRoutes);
 
 app.use("/auth", authRoutes);
 
-app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
 app.use("/cursos", cursoRoutes);
 app.use("/turmas", turmaRoutes);
