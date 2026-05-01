@@ -117,7 +117,7 @@ export default function EvasaoPage() {
 
             await apiRequest("/evasao/processar/aluno", {
                 method: "POST",
-                body: JSON.stringify({ alunoId }),
+                body: { alunoId },
             });
 
             setSuccess("Evasão do aluno processada com sucesso.");
@@ -170,13 +170,13 @@ export default function EvasaoPage() {
 
             await apiRequest("/evasao/tratativa", {
                 method: "POST",
-                body: JSON.stringify({
+                body: {
                     ocorrenciaId: selectedOcorrencia.id,
                     tipoContato: tratativaForm.tipoContato,
                     descricao: tratativaForm.descricao,
                     retornoAluno: tratativaForm.retornoAluno || null,
                     observacoes: tratativaForm.observacoes || null,
-                }),
+                },
             });
 
             setSuccess("Tratativa registrada com sucesso.");
@@ -197,10 +197,10 @@ export default function EvasaoPage() {
 
             await apiRequest("/evasao/lancado-sistema", {
                 method: "POST",
-                body: JSON.stringify({
+                body: {
                     ocorrenciaId,
                     observacoes: "Lançamento confirmado no sistema interno.",
-                }),
+                },
             });
 
             setSuccess("Ocorrência marcada como lançada no sistema.");
@@ -225,9 +225,9 @@ export default function EvasaoPage() {
 
             await apiRequest("/evasao/finalizar", {
                 method: "POST",
-                body: JSON.stringify({
+                body: {
                     ocorrenciaId,
-                }),
+                },
             });
 
             setSuccess("Ocorrência finalizada com sucesso.");
@@ -252,9 +252,9 @@ export default function EvasaoPage() {
 
             await apiRequest("/evasao/cancelar", {
                 method: "POST",
-                body: JSON.stringify({
+                body: {
                     ocorrenciaId,
-                }),
+                },
             });
 
             setSuccess("Ocorrência cancelada com sucesso.");

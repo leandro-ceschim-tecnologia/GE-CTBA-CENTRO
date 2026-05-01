@@ -203,7 +203,7 @@ export default function TarefasPedagogicasPage() {
 
             const response = await apiRequest("/tarefas-pedagogicas/lote", {
                 method: "POST",
-                body: JSON.stringify(payloadLote),
+                body: payloadLote,
             });
 
             return response;
@@ -222,7 +222,7 @@ export default function TarefasPedagogicasPage() {
 
         const response = await apiRequest("/tarefas-pedagogicas", {
             method: "POST",
-            body: JSON.stringify(payload),
+            body: payload,
         });
 
         return response;
@@ -293,7 +293,7 @@ export default function TarefasPedagogicasPage() {
 
             const response = await apiRequest(`/tarefas-pedagogicas/${id}/status`, {
                 method: "PATCH",
-                body: JSON.stringify({ status }),
+                body: { status },
             });
 
             setSuccess(response?.message || "Status atualizado com sucesso.");

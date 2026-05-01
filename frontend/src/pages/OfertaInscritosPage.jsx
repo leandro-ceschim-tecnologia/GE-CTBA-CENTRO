@@ -68,7 +68,7 @@ export default function OfertaInscritosPage() {
 
             await apiRequest(`/ofertas/${id}/inscricoes/${inscricaoId}`, {
                 method: "PATCH",
-                body: JSON.stringify(payload),
+                body: payload,
             });
 
             setSuccess(mensagem);
@@ -88,7 +88,7 @@ export default function OfertaInscritosPage() {
 
             await apiRequest(`/ofertas/${id}/inscricoes/${inscricaoId}/certificado`, {
                 method: "POST",
-                body: JSON.stringify({}),
+                body: {},
             });
 
             setSuccess("Certificado emitido com sucesso.");
@@ -110,7 +110,7 @@ export default function OfertaInscritosPage() {
                 `/ofertas/${id}/inscricoes/${inscricaoId}/certificado/regenerar`,
                 {
                     method: "POST",
-                    body: JSON.stringify({}),
+                    body: {},
                 }
             );
 
@@ -131,7 +131,7 @@ export default function OfertaInscritosPage() {
 
             const result = await apiRequest(`/ofertas/${id}/certificados/emitir-presentes`, {
                 method: "POST",
-                body: JSON.stringify({ sobrescrever: false }),
+                body: { sobrescrever: false },
             });
 
             const emitidos = Array.isArray(result)
@@ -167,7 +167,7 @@ export default function OfertaInscritosPage() {
                 `/ofertas/${id}/certificados/regenerar-presentes`,
                 {
                     method: "POST",
-                    body: JSON.stringify({}),
+                    body: {},
                 }
             );
 

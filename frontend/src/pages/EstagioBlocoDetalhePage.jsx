@@ -119,11 +119,11 @@ export default function EstagioBlocoDetalhePage() {
 
             await apiRequest(`/estagios-enf/blocos/${id}/campos`, {
                 method: "POST",
-                body: JSON.stringify({
+                body: {
                     campoId: Number(campoForm.campoId),
                     ordem: campoForm.ordem ? Number(campoForm.ordem) : null,
                     observacoes: campoForm.observacoes?.trim() || null,
-                }),
+                },
             });
 
             setSuccess("Campo adicionado ao bloco com sucesso.");
@@ -173,12 +173,12 @@ export default function EstagioBlocoDetalhePage() {
 
             await apiRequest(`/estagios-enf/blocos/${id}/grupos`, {
                 method: "POST",
-                body: JSON.stringify({
+                body: {
                     nome: grupoForm.nome.trim(),
                     ordem: grupoForm.ordem ? Number(grupoForm.ordem) : null,
                     fixo: grupoForm.fixo,
                     observacoes: grupoForm.observacoes?.trim() || null,
-                }),
+                },
             });
 
             setSuccess("Grupo criado com sucesso.");

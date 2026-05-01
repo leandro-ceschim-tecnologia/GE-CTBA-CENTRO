@@ -255,11 +255,11 @@ export default function FrequenciaPage() {
 
                 await apiRequest("/frequencia/lancamento", {
                     method: "POST",
-                    body: JSON.stringify({
+                    body: {
                         cronogramaAulaId: coluna.cronogramaAulaId,
                         observacoes: null,
                         alunos: alunosPayload,
-                    }),
+                    },
                 });
             }
 
@@ -316,13 +316,13 @@ export default function FrequenciaPage() {
 
             await apiRequest("/frequencia/adicionar-aluno", {
                 method: "POST",
-                body: JSON.stringify({
+                body: {
                     alunoId: aluno.id,
                     turmaId: grade.turma.id,
                     turmaDisciplinaId: grade.turmaDisciplina.id,
                     origem: origemAluno,
                     observacoes: observacoesAluno || null,
-                }),
+                },
             });
 
             setSuccess("Aluno vinculado à disciplina com sucesso.");

@@ -437,14 +437,14 @@ export default function OfertaFormPage() {
             if (isEditing) {
                 await apiRequest(`/ofertas/${ofertaId}`, {
                     method: "PUT",
-                    body: JSON.stringify(payload),
+                    body: payload,
                 });
 
                 setSuccess("Oferta atualizada com sucesso.");
             } else {
                 await apiRequest("/ofertas", {
                     method: "POST",
-                    body: JSON.stringify(payload),
+                    body: payload,
                 });
 
                 setSuccess("Oferta cadastrada com sucesso.");

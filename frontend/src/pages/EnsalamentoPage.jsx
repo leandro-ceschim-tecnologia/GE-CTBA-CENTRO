@@ -241,14 +241,14 @@ export default function EnsalamentoPage() {
             if (editingId) {
                 await apiRequest(`/ensalamento/${editingId}`, {
                     method: "PUT",
-                    body: JSON.stringify(payload),
+                    body: payload,
                 });
 
                 setSuccess("Item de ensalamento atualizado com sucesso.");
             } else {
                 await apiRequest("/ensalamento", {
                     method: "POST",
-                    body: JSON.stringify(payload),
+                    body: payload,
                 });
 
                 setSuccess("Item de ensalamento cadastrado com sucesso.");
@@ -382,7 +382,7 @@ export default function EnsalamentoPage() {
 
             const result = await apiRequest("/ensalamento/lote", {
                 method: "POST",
-                body: JSON.stringify({ itens }),
+                body: { itens },
             });
 
             setLoteResult(result || null);

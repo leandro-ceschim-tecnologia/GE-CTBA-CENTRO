@@ -110,14 +110,14 @@ export default function SalasPage() {
             if (editingId) {
                 await apiRequest(`/salas/${editingId}`, {
                     method: "PUT",
-                    body: JSON.stringify(payload),
+                    body: payload,
                 });
 
                 setSuccess("Sala atualizada com sucesso.");
             } else {
                 await apiRequest("/salas", {
                     method: "POST",
-                    body: JSON.stringify(payload),
+                    body: payload,
                 });
 
                 setSuccess("Sala cadastrada com sucesso.");
@@ -146,9 +146,9 @@ export default function SalasPage() {
 
             await apiRequest(`/salas/${sala.id}/status`, {
                 method: "PATCH",
-                body: JSON.stringify({
+                body: {
                     ativo: !sala.ativo,
-                }),
+                },
             });
 
             setSuccess(
