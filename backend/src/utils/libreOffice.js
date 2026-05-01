@@ -12,7 +12,7 @@ const execFileAsync = promisify(execFile);
 function getSofficePath() {
     return (
         process.env.SOFFICE_PATH ||
-        "C:\\Program Files\\LibreOffice\\program\\soffice.exe"
+        "soffice"
     );
 }
 
