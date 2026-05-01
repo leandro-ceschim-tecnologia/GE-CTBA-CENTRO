@@ -44,11 +44,12 @@ function getTipoHorarioLabel(tipoHorario) {
 
 function formatDateInput(dateValue) {
     if (!dateValue) return "";
-    const date = new Date(dateValue);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
+
+    if (typeof dateValue === "string") {
+        return dateValue.slice(0, 10);
+    }
+
+    return "";
 }
 
 function formatDiasAula(value) {
@@ -348,7 +349,7 @@ export default function TurmasPage() {
                 nome: form.nome,
                 turno: form.turno,
                 cursoId: Number(form.cursoId),
-                dataInicio: form.dataInicio,
+                dataInicio: form.dataInicio || null,
                 diasAula: form.diasAula,
                 datasPuladas: form.datasPuladas,
                 tipoHorario: form.tipoHorario,
@@ -711,7 +712,7 @@ export default function TurmasPage() {
                                             <td>{formatHorarioSabado(turma)}</td>
                                             <td>
                                                 {turma.dataInicio
-                                                    ? new Date(turma.dataInicio).toLocaleDateString("pt-BR")
+                                                    ? formatDateToPtBr(formatDateInput(turma.dataInicio))
                                                     : "-"}
                                             </td>
                                             <td>{formatDiasAula(turma.diasAula)}</td>
