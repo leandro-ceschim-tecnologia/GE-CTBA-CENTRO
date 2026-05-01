@@ -262,14 +262,14 @@ export default function UsersPage() {
             if (isEditing) {
                 await apiRequest(`/users/${editingId}`, {
                     method: "PUT",
-                    body: JSON.stringify(payload),
+                    body: payload,
                 });
 
                 setSuccess("Usuário atualizado com sucesso.");
             } else {
                 await apiRequest("/users", {
                     method: "POST",
-                    body: JSON.stringify(payload),
+                    body: payload,
                 });
 
                 setSuccess("Usuário criado com sucesso.");
@@ -300,7 +300,7 @@ export default function UsersPage() {
 
             const result = await apiRequest("/users/importar", {
                 method: "POST",
-                body: JSON.stringify({ itens }),
+                body: { itens },
             });
 
             setSuccess(result.message || "Importação concluída com sucesso.");
@@ -347,9 +347,9 @@ export default function UsersPage() {
 
             await apiRequest(`/users/${selectedUser.id}/status`, {
                 method: "PATCH",
-                body: JSON.stringify({
+                body: {
                     ativo: !selectedUser.ativo,
-                }),
+                },
             });
 
             setSuccess(
@@ -622,7 +622,7 @@ export default function UsersPage() {
                                         <tbody>
                                             {importErrors.map((item, index) => (
                                                 <tr key={`${item.linha}-${index}`}>
-                                                    
+
                                                     <td>{item.linha}</td>
                                                     <td>{item.nome || "-"}</td>
                                                     <td>{item.email || "-"}</td>
