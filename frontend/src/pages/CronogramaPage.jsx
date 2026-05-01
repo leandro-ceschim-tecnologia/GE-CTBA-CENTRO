@@ -55,6 +55,17 @@ function getRowClass(aula) {
     return "";
 }
 
+function formatDateSafe(dateString) {
+    if (!dateString) return "-";
+
+    if (typeof dateString === "string") {
+        return new Date(`${dateString.slice(0, 10)}T00:00:00`)
+            .toLocaleDateString("pt-BR");
+    }
+
+    return "-";
+}
+
 function formatHorarioAula(aula) {
     if (!aula.horarioInicio || !aula.horarioFim) return "-";
     return `${aula.horarioInicio} às ${aula.horarioFim}`;
@@ -517,7 +528,7 @@ export default function CronogramaPage() {
                             <tbody>
                                 {cronograma.map((aula) => (
                                     <tr key={aula.id} className={getRowClass(aula)}>
-                                        <td>{new Date(aula.data).toLocaleDateString("pt-BR")}</td>
+                                        <td>{formatDateSafe(aula.data)}</td>
                                         <td>{formatHorarioAula(aula)}</td>
                                         <td>{aula.turmaDisciplina?.disciplina?.nome || "-"}</td>
                                         <td>
