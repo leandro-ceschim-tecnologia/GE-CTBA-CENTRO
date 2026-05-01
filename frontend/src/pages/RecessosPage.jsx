@@ -239,14 +239,14 @@ export default function RecessosPage() {
             if (editingId) {
                 await apiRequest(`/recessos/${editingId}`, {
                     method: "PUT",
-                    body: JSON.stringify(payload),
+                    body: payload,
                 });
 
                 setSuccess("Recesso atualizado com sucesso.");
             } else {
                 await apiRequest("/recessos", {
                     method: "POST",
-                    body: JSON.stringify(payload),
+                    body: payload,
                 });
 
                 setSuccess("Recesso cadastrado com sucesso.");
@@ -277,7 +277,7 @@ export default function RecessosPage() {
 
             const result = await apiRequest("/recessos/importar", {
                 method: "POST",
-                body: JSON.stringify({ itens }),
+                body: { itens },
             });
 
             setSuccess(result.message || "Importação concluída com sucesso.");
@@ -315,9 +315,9 @@ export default function RecessosPage() {
 
             await apiRequest(`/recessos/${recesso.id}/status`, {
                 method: "PATCH",
-                body: JSON.stringify({
+                body: {
                     ativo: !recesso.ativo,
-                }),
+                },
             });
 
             setSuccess(

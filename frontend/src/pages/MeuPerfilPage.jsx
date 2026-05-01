@@ -90,13 +90,13 @@ export default function MeuPerfilPage() {
         try {
             const updated = await apiRequest("/me", {
                 method: "PUT",
-                body: JSON.stringify({
+                body: {
                     nome: form.nome,
                     fone1: form.fone1,
                     fone2: form.fone2,
                     fotoUrl: form.fotoUrl,
                     bio: form.bio,
-                }),
+                },
             });
 
             setForm((prev) => ({
@@ -133,7 +133,7 @@ export default function MeuPerfilPage() {
         try {
             const result = await apiRequest("/me/password", {
                 method: "PUT",
-                body: JSON.stringify(passwordForm),
+                body: passwordForm,
             });
 
             setPasswordSuccess(result?.message || "Senha alterada com sucesso.");

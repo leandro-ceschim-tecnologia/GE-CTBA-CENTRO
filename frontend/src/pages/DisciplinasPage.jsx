@@ -96,9 +96,9 @@ export default function DisciplinasPage() {
 
             await apiRequest(`/disciplinas/${disciplina.id}/status`, {
                 method: "PATCH",
-                body: JSON.stringify({
+                body: {
                     ativo: !disciplina.ativo,
-                }),
+                },
             });
 
             setSuccess(
@@ -132,14 +132,14 @@ export default function DisciplinasPage() {
             if (editingId) {
                 await apiRequest(`/disciplinas/${editingId}`, {
                     method: "PUT",
-                    body: JSON.stringify(payload),
+                    body: payload,
                 });
 
                 setSuccess("Disciplina atualizada com sucesso.");
             } else {
                 await apiRequest("/disciplinas", {
                     method: "POST",
-                    body: JSON.stringify(payload),
+                    body: payload,
                 });
 
                 setSuccess("Disciplina cadastrada com sucesso.");

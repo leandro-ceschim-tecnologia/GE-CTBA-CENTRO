@@ -183,9 +183,9 @@ export default function MinhasAulasInstrutorPage() {
 
             await apiRequest(`/reservas/${reserva.id}/status`, {
                 method: "PATCH",
-                body: JSON.stringify({
+                body: {
                     status: "cancelada",
-                }),
+                },
             });
 
             setSuccess("Reserva cancelada com sucesso.");
@@ -244,12 +244,12 @@ export default function MinhasAulasInstrutorPage() {
 
             await apiRequest("/reservas", {
                 method: "POST",
-                body: JSON.stringify({
+                body: {
                     cronogramaAulaId: aula.id,
                     tipo,
                     ...formReserva,
                     observacoes,
-                }),
+                },
             });
 
             setSuccess("Reserva criada com sucesso.");

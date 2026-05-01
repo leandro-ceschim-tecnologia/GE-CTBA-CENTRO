@@ -176,10 +176,10 @@ export default function CronogramaPage() {
 
             const data = await apiRequest("/cronograma/regenerar", {
                 method: "POST",
-                body: JSON.stringify({
+                body: {
                     turmaId: Number(turmaId),
                     dataCorte,
-                }),
+                },
             });
 
             setCronograma(data);
@@ -223,7 +223,7 @@ export default function CronogramaPage() {
 
             const data = await apiRequest("/cronograma/gerar", {
                 method: "POST",
-                body: JSON.stringify({ turmaId: Number(turmaId) }),
+                body: { turmaId: Number(turmaId) },
             });
 
             setCronograma(data);
@@ -242,9 +242,9 @@ export default function CronogramaPage() {
 
             await apiRequest(`/cronograma-aulas/${aulaId}/instrutor`, {
                 method: "PATCH",
-                body: JSON.stringify({
+                body: {
                     instrutorId: instrutorId ? Number(instrutorId) : null,
-                }),
+                },
             });
 
             setSuccess("Instrutor da aula atualizado com sucesso.");
@@ -269,10 +269,10 @@ export default function CronogramaPage() {
                 `/cronograma-aulas/${aula.id}/instrutor-a-partir`,
                 {
                     method: "PATCH",
-                    body: JSON.stringify({
+                    body: {
                         instrutorId: Number(instrutorId),
                         atualizarPadrao,
-                    }),
+                    },
                 }
             );
 
@@ -300,11 +300,11 @@ export default function CronogramaPage() {
 
             await apiRequest("/reservas", {
                 method: "POST",
-                body: JSON.stringify({
+                body: {
                     cronogramaAulaId: aula.id,
                     tipo,
                     recursoNome,
-                }),
+                },
             });
 
             setSuccess("Reserva criada com sucesso.");

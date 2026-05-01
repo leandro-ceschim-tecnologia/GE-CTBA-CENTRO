@@ -362,14 +362,14 @@ export default function TurmasPage() {
             if (editingId) {
                 await apiRequest(`/turmas/${editingId}`, {
                     method: "PUT",
-                    body: JSON.stringify(payload),
+                    body: payload,
                 });
 
                 setSuccess("Turma atualizada com sucesso.");
             } else {
                 await apiRequest("/turmas", {
                     method: "POST",
-                    body: JSON.stringify(payload),
+                    body: payload,
                 });
 
                 setSuccess("Turma cadastrada com sucesso.");
@@ -400,9 +400,9 @@ export default function TurmasPage() {
 
             await apiRequest(`/turmas/${turma.id}/status`, {
                 method: "PATCH",
-                body: JSON.stringify({
+                body: {
                     ativo: !turma.ativo,
-                }),
+                },
             });
 
             setSuccess(

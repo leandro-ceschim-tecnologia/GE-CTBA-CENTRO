@@ -50,14 +50,14 @@ export default function CursosPage() {
             if (editingId) {
                 await apiRequest(`/cursos/${editingId}`, {
                     method: "PUT",
-                    body: JSON.stringify({ nome }),
+                    body: { nome },
                 });
 
                 setSuccess("Curso atualizado com sucesso.");
             } else {
                 await apiRequest("/cursos", {
                     method: "POST",
-                    body: JSON.stringify({ nome }),
+                    body: { nome },
                 });
 
                 setSuccess("Curso cadastrado com sucesso.");
@@ -102,9 +102,9 @@ export default function CursosPage() {
 
             await apiRequest(`/cursos/${curso.id}/status`, {
                 method: "PATCH",
-                body: JSON.stringify({
+                body: {
                     ativo: !curso.ativo,
-                }),
+                },
             });
 
             setSuccess(

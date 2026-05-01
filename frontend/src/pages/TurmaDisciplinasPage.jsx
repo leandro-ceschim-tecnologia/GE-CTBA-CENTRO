@@ -93,9 +93,9 @@ export default function TurmaDisciplinasPage() {
 
             const result = await apiRequest("/turma-disciplinas/sync", {
                 method: "POST",
-                body: JSON.stringify({
+                body: {
                     turmaId: Number(turmaId),
-                }),
+                },
             });
 
             setSuccess(
@@ -120,7 +120,7 @@ export default function TurmaDisciplinasPage() {
 
             const result = await apiRequest(`/turma-disciplinas/${vinculoId}/mover`, {
                 method: "PATCH",
-                body: JSON.stringify({ direcao }),
+                body: { direcao },
             });
 
             setSuccess(result.message || "Ordem atualizada com sucesso.");
@@ -140,10 +140,10 @@ export default function TurmaDisciplinasPage() {
 
             await apiRequest(`/turma-disciplinas/${item.id}`, {
                 method: "PUT",
-                body: JSON.stringify({
+                body: {
                     modulo: Number(item.moduloEdit),
                     quantidadeEncontros: Number(item.quantidadeEncontrosEdit),
-                }),
+                },
             });
 
             setSuccess(`Disciplina "${item.disciplina?.nome}" atualizada com sucesso.`);
@@ -162,9 +162,9 @@ export default function TurmaDisciplinasPage() {
 
             await apiRequest(`/turma-disciplinas/${vinculoId}/instrutor-padrao`, {
                 method: "PATCH",
-                body: JSON.stringify({
+                body: {
                     instrutorId: instrutorId ? Number(instrutorId) : null,
-                }),
+                },
             });
 
             setSuccess("Instrutor padrão atualizado com sucesso.");
