@@ -201,7 +201,10 @@ export default function OfertaInscritosPage() {
             );
 
             if (result?.certificadoUrl) {
-                window.open(`http://localhost:3000${result.certificadoUrl}`, "_blank");
+                const API_URL =
+                    import.meta.env.VITE_API_URL || "http://localhost:3000";
+
+                window.open(`${API_URL}/ofertas/${id}/inscricoes/${inscricaoId}/certificado`, "_blank");
             } else {
                 throw new Error("Certificado não encontrado.");
             }
