@@ -204,7 +204,7 @@ export default function OfertaInscritosPage() {
                 const API_URL =
                     import.meta.env.VITE_API_URL || "http://localhost:3000";
 
-                window.open(`${API_URL}/ofertas/${id}/inscricoes/${inscricaoId}/certificado`, "_blank");
+                window.open(`${API_URL}${result.certificadoUrl}`, "_blank");
             } else {
                 throw new Error("Certificado não encontrado.");
             }
