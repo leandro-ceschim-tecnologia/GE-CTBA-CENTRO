@@ -1,12 +1,15 @@
 FROM node:22-slim
 
 RUN apt-get update && apt-get install -y \
-    openssl \
     libreoffice \
     libreoffice-writer \
     fonts-dejavu \
     fonts-liberation \
+    fontconfig \
     && rm -rf /var/lib/apt/lists/*
+
+RUN which soffice
+RUN soffice --version
 
 WORKDIR /app
 
@@ -15,9 +18,8 @@ RUN npm install
 
 COPY . .
 
-ENV PORT=10000
-ENV LIBREOFFICE_PATH=soffice
+RUN npx prisma generate
 
 EXPOSE 10000
 
-CMD ["sh", "-c", "npx prisma generate && node src/server.js"]
+CMD ["node", "src/server.js"]
