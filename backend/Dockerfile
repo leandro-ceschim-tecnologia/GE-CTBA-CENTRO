@@ -18,8 +18,6 @@ RUN npm install
 
 COPY . .
 
-RUN npx prisma generate
-
 EXPOSE 10000
 
-CMD ["node", "src/server.js"]
+CMD ["sh", "-c", "npx prisma generate && node src/server.js"]
