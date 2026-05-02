@@ -95,9 +95,13 @@ function getSofficeBinary() {
         return process.env.LIBREOFFICE_PATH;
     }
 
+    if (process.env.SOFFICE_PATH) {
+        return process.env.SOFFICE_PATH;
+    }
+
     return process.platform === "win32"
         ? "soffice.exe"
-        : "soffice";
+        : "/usr/bin/soffice";
 }
 
 export async function converterDocxParaPdf(docxPath, outputPdfDir) {
