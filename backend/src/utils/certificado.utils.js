@@ -91,17 +91,22 @@ export function getCertificadoFilePaths(codigoCertificado) {
 }
 
 function getSofficeBinary() {
-    if (process.env.LIBREOFFICE_PATH) {
-        return process.env.LIBREOFFICE_PATH;
+    const candidatos = [
+        process.env.SOFFICE_PATH,
+        process.env.LIBREOFFICE_PATH,
+        "/usr/bin/soffice",
+        "/usr/bin/libreoffice",
+        "/usr/local/bin/soffice",
+        "/usr/lib/libreoffice/program/soffice",
+    ].filter(Boolean);
+
+    for (const candidato of candidatos) {
+        if (fs.existsSync(candidato)) {
+            return candidato;
+        }
     }
 
-    if (process.env.SOFFICE_PATH) {
-        return process.env.SOFFICE_PATH;
-    }
-
-    return process.platform === "win32"
-        ? "soffice.exe"
-        : "/usr/bin/soffice";
+    return process.platform === "win32" ? "soffice.exe" : "libreoffice";
 }
 
 export async function converterDocxParaPdf(docxPath, outputPdfDir) {
@@ -109,18 +114,29 @@ export async function converterDocxParaPdf(docxPath, outputPdfDir) {
 
     const soffice = getSofficeBinary();
 
-    await execFileAsync(
-        soffice,
-        [
-            "--headless",
-            "--convert-to",
-            "pdf",
-            "--outdir",
-            outputPdfDir,
-            docxPath,
-        ],
-        { windowsHide: true }
-    );
+    console.log("Tentando converter DOCX para PDF");
+    console.log("DOCX:", docxPath);
+    console.log("Saída PDF:", outputPdfDir);
+    console.log("Binário LibreOffice escolhido:", soffice);
+    console.log("Existe binário?", fs.existsSync(soffice));
+
+    try {
+        await execFileAsync(
+            soffice,
+            [
+                "--headless",
+                "--convert-to",
+                "pdf",
+                "--outdir",
+                outputPdfDir,
+                docxPath,
+            ],
+            { windowsHide: true }
+        );
+    } catch (error) {
+        console.error("Erro ao executar LibreOffice:", error);
+        throw new Error(`Erro ao converter DOCX para PDF: ${error.message}`);
+    }
 
     const pdfPathGerado = path.join(
         outputPdfDir,
@@ -128,7 +144,7 @@ export async function converterDocxParaPdf(docxPath, outputPdfDir) {
     );
 
     if (!fs.existsSync(pdfPathGerado)) {
-        throw new Error("Falha ao converter DOCX para PDF.");
+        throw new Error("Falha ao converter DOCX para PDF. Arquivo PDF não foi gerado.");
     }
 
     return pdfPathGerado;
